@@ -1,10 +1,15 @@
 # symfony-cheatsheet
 
-## Twig-syntaxes
+https://twig.symfony.com/
+## Twig
 
-{{ }} Say something
+### Twig-syntaxes
 
-{% %} Do something
+
+#### `{{ }}` Say something
+
+
+#### `{% %}` Do something
 
 ```HTML
 <h2>Comments</h2>
@@ -15,4 +20,10 @@
 </ul>
 ```
 
-{# #} Comments
+#### `{# #}` Comments
+
+#### Filters
+
+`<h2>Comments ({{ comments|length }})</h2>`
+
+
