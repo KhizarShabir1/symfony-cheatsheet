@@ -26,4 +26,6 @@ https://twig.symfony.com/
 
 `<h2>Comments ({{ comments|length }})</h2>`
 
+##### Wrapping the path in twig asset( function)
 
+`<link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">`
