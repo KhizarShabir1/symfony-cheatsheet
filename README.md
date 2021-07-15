@@ -52,3 +52,21 @@ This gives a full list of all of the type-hints that you can use to get a servic
         `$articleContent = <<<EOF
  
 EOF;`
+
+`index.php` is called the **Front Controller**. The first file that is executed for every page.
+
+### `Kernel.php`
+this function loads /config/bundles.php
+    public function registerBundles(): iterable
+    {
+        $contents = require $this->getProjectDir().'/config/bundles.php';
+### difference between dev and prod environments
+One big difference between the dev and prod environments is that in the prod environment, the internal Symfony cache is not automatically rebuilt. That's because the prod environment is wired for speed.
+
+In practice, this means that whenever you want to switch to the prod environment... like when deploying... you need to run a command:
+
+`./bin/console cache:clear`
+
+### Creating services
+
+When you create a service class, the arguments to its constructor are autowired. That means that we can use any of the classes or interfaces from debug:autowiring as type-hints.
