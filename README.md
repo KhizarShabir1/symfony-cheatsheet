@@ -70,3 +70,16 @@ In practice, this means that whenever you want to switch to the prod environment
 ### Creating services
 
 When you create a service class, the arguments to its constructor are autowired. That means that we can use any of the classes or interfaces from debug:autowiring as type-hints.
+
+### % sign
+```YAML
+parameters:
+    cache_adapter: cache.adapter.apcu
+framework:
+    cache:
+        # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
+        app: '%cache_adapter%'
+```
+ whenever you surround a string with percent signs, Symfony will replace this with that parameter's value.
+ 
+
