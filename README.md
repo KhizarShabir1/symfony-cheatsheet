@@ -109,8 +109,51 @@ SLACK_WEBHOOK_ENDPOINT=https://hooks.slack.com
 ### CUSTOM VARS END
 ```
 
+#### Environment variables in production
 
+But if setting environment variable is tough in your situation, well, you could still use the `.env` file. I mean if we deployed right now, we could create this file, put all the real values inside, and Symfony would use that! Well, if you're planning on doing this, make sure to move the dotenv library from the require-dev section of your composer.json to require by removing and re-adding it:
+```
+composer remove symfony/dotenv
+composer require symfony/dotenv
+```
 
+#### Casting values for environment variables
 
+Don't worry! Environment variables have one more trick! You can cast values by prefixing the name with, for example, string::
 
+##### `config/packages/nexy_slack.yaml`
+
+```
+nexy_slack:
+    endpoint: '%env(string:SLACK_WEBHOOK_ENDPOINT)%'
+```
+
+Well, this is already a string, but you get the idea!
+
+To show some better examples, Google for Symfony Advanced Environment Variables to find a blog post about this feature. Cooooool. This DATABASE_PORT should be an int so... we cast it! You can also use bool or float.
+
+#### Setting Default Environment Variables
+
+This is great... but then, the Symfony devs went crazy. First, as you'll see in this blog post, you can set default environment variable values under the parameters key. For example, by adding an env(SECRET_FILE) parameter, you've just defined a default SECRET_FILE environment value. If a real SECRET_FILE environment variable were set, it would override this.
+```
+parameters:
+    env(SECRETS_FILE): '/etc/secure/example.com/secrets.json'
+```
+#### Custom Processing
+More importantly, there are 5 other prefixes you can use for special processing:
+
+First, `resolve:` will resolve parameters - the `%foo%` things - if you have them inside your environment variable;
+
+Second, you can use `file:` to return the contents of a file, when that file's path is stored in an environment variable;
+
+Third, `base64:` will base64_decode a value: that's handy if you have a value that contains line breaks or special characters: you can base64_encode it to make it easier to set as an environment variable;
+
+Fourth, `constant:` allows you to read PHP constants;
+
+And finally, `json:` will, yep, call your friend Jason on the phone. Hey Jason! I mean, it will json_decode() a string.
+
+And, ready for the coolest part? You can chain these: like, open a file, and then decode its JSON:
+
+`app.secrets: '%env(json:file:SECRETS_FILE)%'`
+Actually, sorry, there's more! You can even create your own, custom prefix - like `blackhole:` and write your own custom processing logic.
 
