@@ -84,3 +84,33 @@ framework:
  
 ### Creating environment specific services file
 Create a new config file called services_dev.yaml. This is the built-in way to create an environment-specific services file.
+
+### Environment variables
+
+Saving sensitive stata in `.env.local` file and showing only sentsitive but not secret data in `.env` file.
+#### `nexy_slack.yaml` file
+
+```
+nexy_slack:
+    endpoint: '%env(SLACK_WEBHOOK_ENDPOINT)%'
+```
+
+#### `.env.local` file ignored by git because it is added in .gitignore file
+```
+### CUSTOM VARS
+SLACK_WEBHOOK_ENDPOINT=https://hooks.slack.com/services/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
+### CUSTOM VARS END
+```
+
+#### `.env` file comiited to git (not containing sectret info)
+```
+### CUSTOM VARS
+SLACK_WEBHOOK_ENDPOINT=https://hooks.slack.com
+### CUSTOM VARS END
+```
+
+
+
+
+
+
