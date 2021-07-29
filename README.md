@@ -157,3 +157,41 @@ And, ready for the coolest part? You can chain these: like, open a file, and the
 `app.secrets: '%env(json:file:SECRETS_FILE)%'`
 Actually, sorry, there's more! You can even create your own, custom prefix - like `blackhole:` and write your own custom processing logic.
 
+
+### Setter Injection
+Now let's go a step further... In SlackClient, I want to log a message. But, we already know how to do this: add a second constructor argument, type-hint it with LoggerInterface and, we're done!
+
+But... there's another way to autowire your dependencies: setter injection. Ok, it's just a fancy-sounding word for a simple concept. Setter injection is less common than passing things through the constructor, but sometimes it makes sense for optional dependencies - like a logger. What I mean is, if a logger was not passed to this class, we could still write our code so that it works. It's not required like the Slack client.
+
+Anyways, here's how setter injection works: create a public function setLogger() with the normal LoggerInterface $logger argument:
+
+```
+ 40 lines  src/Service/SlackClient.php
+use Psr\Log\LoggerInterface;
+class SlackClient
+{
+    private $slack;
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+    public function __construct(Client $slack)
+    {
+        $this->slack = $slack;
+    }
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+    public function sendMessage(string $from, string $message)
+    {
+        if ($this->logger) {
+            $this->logger->info('Beaming a message to Slack!');
+        }
+  //code is missing here
+    }
+}
+```
+Create the property for this: there's no shortcut to help us this time. Inside, say $this->logger = $logger:
+
+
