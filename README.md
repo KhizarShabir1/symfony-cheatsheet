@@ -195,3 +195,59 @@ class SlackClient
 Create the property for this: there's no shortcut to help us this time. Inside, say $this->logger = $logger:
 
 
+
+## Doctrine
+
+### Creating a database
+ `./bin/console doctrine:database:create`
+ 
+ ## creating database etities/classed that can be stored in database
+ `./bin/console make:entity`
+ 
+ ## How migrations work
+ 
+This is brilliant! Whenever we need to make a database change, we follow this simple two-step process: **(1)** Generate the migration with `make:migration` and **(2)** run that migration with `doctrine:migrations:migrate`. We will commit the migrations to our git repository. Then, on deploy, just make sure to run doctrine:migrations:migrate. The production database will have its own `migration_versions` table, so this will automatically run all migrations that have not been run yet on production. It's perfect.
+
+### Saving data in database/ Saving entities
+
+#### Saving the Article
+To save this, we just need to find Doctrine and say:
+
+Hey Doctrine! Say hi to Jon Wage for us! Also, can you please save this article to the database. You're the best!
+
+How do we do this? In the last Symfony tutorial, we talked about how the main thing that a bundle gives us is more services. DoctrineBundle gives us one, very important service that's used for both saving to and fetching from the database. It's called the DeathStar. No, no, it's the EntityManager. But, missed opportunity...
+
+Find your terminal and run:
+
+php bin/console debug:autowiring
+Scroll to the the top. There it is! EntityManagerInterface: that's the type-hint we can use to fetch the service. Go back to the top of the new() method and add an argument: EntityManagerInterface $em:
+```
+ 56 lines  src/Controller/ArticleAdminController.php
+use Doctrine\ORM\EntityManagerInterface;
+class ArticleAdminController extends AbstractController
+{
+    public function new(EntityManagerInterface $em)
+    {
+    }
+}
+Now that we have the all-important entity manager, saving is a two-step process... and it may look a bit weird initially. First, $em->persist($article), then $em->flush():
+
+ 56 lines  src/Controller/ArticleAdminController.php
+use Doctrine\ORM\EntityManagerInterface;
+class ArticleAdminController extends AbstractController
+{
+    public function new(EntityManagerInterface $em)
+    {
+        // publish most articles
+        if (rand(1, 10) > 2) {
+            $article->setPublishedAt(new \DateTime(sprintf('-%d days', rand(1, 100))));
+        }
+        $em->persist($article);
+        $em->flush();
+    }
+}
+```
+It's always these two lines. Persist simply says that you would like to save this article, but Doctrine does not make the INSERT query yet. That happens when you call `$em->flush()`. Why two separate steps? Well, it gives you a bit more flexibility: you could create ten Article objects, called `persist()` on each, then `flush()` just one time at the end. This helps Doctrine optimize saving those ten articles.
+
+
+ 
